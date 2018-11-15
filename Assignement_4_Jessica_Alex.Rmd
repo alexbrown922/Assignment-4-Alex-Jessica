@@ -14,6 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # A. Load packages and read in data files.
 # Alex, install vcdExtra before loading this package
 
+
 library(tidyverse)
 library(knitr)
 library(kableExtra)
@@ -123,5 +124,18 @@ mean_lobster_size <- lobster_abundance_tidy %>%
 mean_lobster_size
 
 # Note for Alex: Add a counts column for each location
+```
+
+```{r}
+
+# Trying to make column graph with side-by-side columns by site
+
+
+abundance_col_2 <- ggplot(lobster_abundance_simp, aes(x = YEAR, y = SIZE, group = SITE)) +
+geom_col(aes(fill = SITE),
+position = "dodge")
+
+abundance_col_2
+
 ```
 
