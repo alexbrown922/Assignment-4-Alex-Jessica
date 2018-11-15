@@ -80,6 +80,7 @@ abundance_col <- ggplot(lobster_abundance_simp, aes(x = YEAR, y = COUNT))+
 abundance_col
 
 # Note for Jess: Need to add space between facet_wrap labels and plots
+# Note for Jess: Maybe create one line graph with all sites on it instead of column graph?
     
     
 ```
@@ -103,6 +104,7 @@ traps_col
 
 
 # Note for Jess: Need to add space between facet_wrap labels and plots
+# Note for Jess: Maybe create line plot for traps with all sites on one plot?
 
 ```
 
@@ -137,5 +139,59 @@ position = "dodge")
 
 abundance_col_2
 
+```
+
+Note for Jess: For number 3, conduct 5 two sample t-tests for each location between 2012 and 2017 and see the significant changes at each MPA and non-MPA location and compare in discussion.
+
+```{r}
+
+# 3. At Isla Vista and Naples Reef, the two protected MPA sites (with zero fishing pressure), how do lobster sizes in 2012 and 2017 compare? At the non-MPA sites?
+# Run 5 two-sample t-tests for each location, with samples being 2012 and 2017
+
+# First, look at data and see if its normal
+
+size_hist <- ggplot(lobster_abundance_tidy, aes(x = SIZE)) +
+  geom_histogram() +
+  facet_wrap(~ SITE)
+
+size_hist
+
+size_qq <- ggplot(lobster_abundance_tidy, aes(sample = SIZE)) +
+  geom_qq() +
+  facet_wrap(~ SITE)
+
+size_qq
+
+size_summary <- lobster_abundance_tidy %>% 
+  group_by(SITE, YEAR) %>% 
+  filter(YEAR == "2012" | YEAR == "2017") %>% 
+  summarize(
+    sample_size = length(SIZE)
+  )
+
+size_summary
+
+# Based on the histograms and qq-plots, the size data for the sites are approximately normal. However, certain sites have very small sample sizes, so is it correct to compare the samples using t-tests?
+
+
+# Second, do F-tests for equal variance for each site to determine if we will use a Welch's t-test or Student's t-test 
+
+# F-test for equal variances
+# Null: The variances are equal (ratio of variances = 1)
+# Alternative: The variances aren't equal (ratio of variances NOT = 1)
+
+f_test_arroyo <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2012" | YEAR == "2017", SITE == "AQUE") %>% 
+  var.test(SIZE ~ YEAR, data = .)
+
+f_test_arroyo
+
+# Based on the F-test, for Arroyo, we fail to reject the null that the variances for the 2012 and 2017 samples are equal (p = 0.069). Use a student's t-test.
+
+f_test_arroyo <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2012" | YEAR == "2017", SITE == "AQUE") %>% 
+  var.test(SIZE ~ YEAR, data = .)
+
+f_test_arroyo
 ```
 
