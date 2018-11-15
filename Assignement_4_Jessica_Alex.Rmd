@@ -10,6 +10,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r, include = FALSE}
+
+# A. Load packages and read in data files.
+# Alex, install vcdExtra before loading this package
+
 library(tidyverse)
 library(knitr)
 library(kableExtra)
@@ -21,10 +25,82 @@ library(extrafont)
 library(ggrepel)
 library(effsize)
 library(ggpubr)
+library(vcdExtra)
 
 lobster_abundance <- read_csv("lobster_size_abundance.csv")
 
 lobster_traps <- read_csv("lobster_traps.csv")
+
+```
+
+```{r}
+
+# B. Display data frame lobster_abundance in tidy format
+
+# First, simplify lobster_abundance data frame by removing rows with COUNT = 0
+
+lobster_abundance_simp <- lobster_abundance %>% 
+  filter(COUNT != 0) %>% 
+  as.data.frame(lobster_abundance_simp) %>% 
+  group_by(SITE, YEAR)
+
+# Second, create tidy formatted data frame using expand.dft
+
+lobster_abundance_tidy <- expand.dft(lobster_abundance_simp, var.names = NULL, freq = "COUNT")
+
+# Use lobster_abundance_tidy for all calculations (except column graph)
+
+
+# Filter lobster_traps to include only the 5 pertinent sites
+
+lobster_traps_simp <- lobster_traps %>% 
+  filter(SITE == "AQUE" | SITE == "CARP" | SITE == "IVEE" | SITE == "MOHK" | SITE == "NAPL")
+
+```
+
+```{r}
+
+# C. Create column graphs of lobster abundance by year at each of the 5 sites
+
+labels <- c(AQUE = "Arroyo Quemado", CARP = "Carpinteria", IVEE = "Isla Vista", MOHK = "Mohawk Reef", NAPL = "Naples Reef")
+
+abundance_col <- ggplot(lobster_abundance_simp, aes(x = YEAR, y = COUNT))+
+  geom_col(aes(fill = SITE)) +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic() +
+  xlab("\nYear") +
+  ylab("Frequency\n") +
+  facet_wrap(~SITE, scale = "free", labeller = labeller(SITE = labels)) +
+  theme(legend.position = "none") +
+  theme(panel.spacing = unit(1, "lines"))
+  
+
+abundance_col
+
+# Note for Jess: Need to add space between facet_wrap labels and plots
+    
+    
+```
+
+```{r}
+
+# D. Create column graphs of fishing pressure (trap buoys) by year at each of the 5 sites
+
+traps_col <- ggplot(lobster_traps_simp, aes(x = YEAR, y = TRAPS))+
+  geom_col(aes(fill = SITE)) +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic() +
+  xlab("\nYear") +
+  ylab("Frequency\n") +
+  facet_wrap(~SITE, scale = "free", labeller = labeller(SITE = labels)) +
+  theme(legend.position = "none") +
+  theme(panel.spacing = unit(1, "lines"))
+  
+
+traps_col
+
+
+# Note for Jess: Need to add space between facet_wrap labels and plots
 
 ```
 
