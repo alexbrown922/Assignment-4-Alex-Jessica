@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r, include = FALSE}
 library(tidyverse)
 library(knitr)
 library(kableExtra)
@@ -21,6 +21,10 @@ library(extrafont)
 library(ggrepel)
 library(effsize)
 library(ggpubr)
+
+lobster_abundance <- read_csv("lobster_size_abundance.csv")
+
+lobster_traps <- read_csv("lobster_traps.csv")
 
 ```
 
