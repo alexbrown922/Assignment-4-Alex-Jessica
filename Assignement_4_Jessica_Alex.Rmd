@@ -33,6 +33,7 @@ lobster_traps <- read_csv("lobster_traps.csv")
 
 ```
 
+###1
 ```{r}
 
 # B. Display data frame lobster_abundance in tidy format
@@ -102,5 +103,25 @@ traps_col
 
 # Note for Jess: Need to add space between facet_wrap labels and plots
 
+```
+
+###2
+
+
+```{r}
+
+# Compare mean lobster sizes (carapace length (mm)) across the five sites for lobster observations collected in 2017.
+
+# create a table comparing mean lobster sizes at the 5 locations
+
+mean_lobster_size <- lobster_abundance_tidy %>% 
+  select(YEAR, SITE, SIZE) %>% 
+  filter(YEAR == "2017") %>% 
+  group_by(SITE) %>% 
+  summarize(mean = mean(SIZE))
+
+mean_lobster_size
+
+# Note for Alex: Add a counts column for each location
 ```
 
