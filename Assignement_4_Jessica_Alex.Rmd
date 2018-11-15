@@ -9,4 +9,18 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(plotly)
+library(pwr)
+library(car)
+library(RColorBrewer)
+library(extrafont)
+library(ggrepel)
+library(effsize)
+library(ggpubr)
+
+```
 
