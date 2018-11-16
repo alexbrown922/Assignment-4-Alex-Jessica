@@ -27,6 +27,7 @@ library(ggrepel)
 library(effsize)
 library(ggpubr)
 library(vcdExtra)
+library(dplyr)
 
 lobster_abundance <- read_csv("lobster_size_abundance.csv")
 
@@ -108,14 +109,20 @@ traps_col
 
 ```
 
+
+
+
+
+
 ###2
 
 
 ```{r}
+# 2
 
 # Compare mean lobster sizes (carapace length (mm)) across the five sites for lobster observations collected in 2017.
 
-# create a table comparing mean lobster sizes at the 5 locations
+# create a new df with mean lobster sizes at the 5 locations
 
 mean_lobster_size <- lobster_abundance_tidy %>% 
   select(YEAR, SITE, SIZE) %>% 
@@ -125,8 +132,65 @@ mean_lobster_size <- lobster_abundance_tidy %>%
 
 mean_lobster_size
 
+# create a table comparing mean lobster sizes at the 5 locations
+
+mean_lobster_tbl <- mean_lobster_size %>% 
+  kable(col.names = c("Site", "Mean Lobster Carapace Length (mm)"),
+        caption = "Mean Lobster Sizes at 5 Locations in 2017") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", full_width = FALSE)) %>% 
+  row_spec(row = 5, bold = TRUE, color = "green")
+
+mean_lobster_tbl
+
 # Note for Alex: Add a counts column for each location
+
+
+# Run an ANOVA test
+
+# Single factor: SITE (location)
+# Number of levels: 5 (IVEE, AQUE, CARP, MOHK, NAPL)
+# Random variable: SIZE (mm)
+
+# Is there a significant difference in mean lobster size (mm) for sites IVEE, AQUE, CARP, MOHK, NAPL? 
+
+# HO: mean lobster sizes across all sites are equal
+# HA: At least two means differ significantly 
+
+lobster_aov <- aov(SIZE ~ SITE, data = lobster_abundance_tidy)
+
+summary(lobster_aov)
+
+# post-hoc testing using Tukey's HSD
+
+lobster_ph <- TukeyHSD(lobster_aov)
+
+lobster_ph
 ```
+Note: Put in-line referencing for F statistic and figure out how to interpret p-values for comparison of sites.
+
+Mean lobster sizes (carapace length (mm)) at Arroyo Quemado, Naples Reef, Mohawk Reef, Isla Vista, and Carpinteria locations are significantly differerent in some instances from each other and not significantly different in others. (F(4) = 21.65, p, $\alpha$ = .05 with post-hoc Tukey's HSD, $\alpha = 0.05$.
+
+Sig-diff: 
+
+NAPL-AQUE
+MOHK-CARP
+NAPL-CARP
+MOHK-IVEE
+NAPL-IVEE
+NAPL-MOHK
+
+Not sig-diff:
+
+CARP-AQUE
+IVEE-AQUE
+MOHK-AQUE
+IVEE-CARP
+
+
+
+
+
+
 
 ```{r}
 
@@ -193,5 +257,33 @@ f_test_arroyo <- lobster_abundance_tidy %>%
   var.test(SIZE ~ YEAR, data = .)
 
 f_test_arroyo
+```
+
+### 4
+
+The legal minimum carapace size for lobster is 82.6 mm. What proportion of observed lobsters at each site are above the legal minimum? Does that proportion differ significantly across the 5 sites? (chi-sq)
+```{r}
+# 4
+
+# create a df of lobster sizes above 83 mm at each site
+
+lobster_counts <- lobster_abundance_tidy %>%
+  filter(SITE != "NA", SIZE != "NA") %>% 
+  count(SITE, SIZE) %>% 
+  spread(SIZE, n) %>% 
+  select(-SITE)
+  
+lobster_counts
+
+# convert counts to proportions 
+lobster_prop <- prop.table(as.matrix(lobster_counts), 1) # Proportions calculated by row (use 1)
+
+lobster_prop
+
+# run a chi-sq test 
+
+lobster_x2 <- chisq.test(lobster_counts)
+
+lobster_x2
 ```
 
