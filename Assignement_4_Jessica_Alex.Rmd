@@ -63,16 +63,29 @@ lobster_traps_simp <- lobster_traps %>%
 
 ```{r}
 
-# C. Create column graphs of lobster abundance by year at each of the 5 sites
+# C. Determine the best graphical way to depict abundance and traps data: column or line graphs? Create column graphs and line graphs of lobster abundance by year at each of the 5 sites
+
+# First, create summary table of counts of lobsters at each site for each year
+
+size_summary_graphs <- lobster_abundance_tidy %>% 
+  group_by(SITE, YEAR) %>% 
+  filter(YEAR == "2012" | YEAR == "2013" | YEAR == "2014" | YEAR == "2015" | YEAR == "2016" | YEAR == "2017") %>% 
+  summarize(
+    sample_size = length(SIZE)
+  )
+
+size_summary_graphs
+
+
 
 labels <- c(AQUE = "Arroyo Quemado", CARP = "Carpinteria", IVEE = "Isla Vista", MOHK = "Mohawk Reef", NAPL = "Naples Reef")
 
-abundance_col <- ggplot(lobster_abundance_simp, aes(x = YEAR, y = COUNT))+
+abundance_col <- ggplot(size_summary_graphs, aes(x = YEAR, y = sample_size))+
   geom_col(aes(fill = SITE)) +
   scale_y_continuous(expand = c(0,0)) +
   theme_classic() +
   xlab("\nYear") +
-  ylab("Frequency\n") +
+  ylab("Lobster Count\n") +
   facet_wrap(~SITE, scale = "free", labeller = labeller(SITE = labels)) +
   theme(legend.position = "none") +
   theme(panel.spacing = unit(1, "lines"))
@@ -80,11 +93,24 @@ abundance_col <- ggplot(lobster_abundance_simp, aes(x = YEAR, y = COUNT))+
 
 abundance_col
 
+
+abundance_line <- ggplot(size_summary_graphs, aes(x = YEAR, y = sample_size, group = SITE)) +
+  geom_line(aes(color = SITE)) +
+  geom_point() + 
+  theme_classic() +
+  xlab("\nYear") +
+  ylab("Count\n") 
+
+abundance_line
+
 # Note for Jess: Need to add space between facet_wrap labels and plots
-# Note for Jess: Maybe create one line graph with all sites on it instead of column graph?
+
+# I prefer the column graph - easier to visualize changes per location
     
     
 ```
+**Figure 1. California Spiny Lobster Abundance at Five Long-Term Ecological Research Sites in the Santa Barbara Channel, 2012-2017.** Divers collected lobster abundance data for Panulirus interruptus at each of the five sites each year in late summer, before the start of the fishing season. The sites are Arroyo Quemado (AQUE), Naples Reef (NAPL), Mohawk Reef (MOHK), Isla Vista (IVEE), and Carpinteria (CARP). NAPL and IVEE are marine protected areas; AQUE, MOHK, and CARP are non-marine protected areas. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project. 
+
 
 ```{r}
 
@@ -95,7 +121,7 @@ traps_col <- ggplot(lobster_traps_simp, aes(x = YEAR, y = TRAPS))+
   scale_y_continuous(expand = c(0,0)) +
   theme_classic() +
   xlab("\nYear") +
-  ylab("Frequency\n") +
+  ylab("Number of Traps\n") +
   facet_wrap(~SITE, scale = "free", labeller = labeller(SITE = labels)) +
   theme(legend.position = "none") +
   theme(panel.spacing = unit(1, "lines"))
@@ -105,10 +131,9 @@ traps_col
 
 
 # Note for Jess: Need to add space between facet_wrap labels and plots
-# Note for Jess: Maybe create line plot for traps with all sites on one plot?
 
 ```
-
+**Figure 2. Commercial Lobster Trap Floats at Five Long-Term Ecological Research Sites in the Santa Barbara Channel, 2012-2017.** Data on the number of floats was collected every two to four weeks Oct-Mar, during the lobster fishing season. Commercial lobster trap floats act as indicators of fishing pressure at each location. NAPL and IVEE lack commercial trap floats because they are marine protected areas. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project. 
 
 
 
@@ -187,23 +212,6 @@ MOHK-AQUE
 IVEE-CARP
 
 
-
-
-
-
-
-```{r}
-
-# Trying to make column graph with side-by-side columns by site
-
-
-abundance_col_2 <- ggplot(lobster_abundance_simp, aes(x = YEAR, y = SIZE, group = SITE)) +
-geom_col(aes(fill = SITE),
-position = "dodge")
-
-abundance_col_2
-
-```
 
 Note for Jess: For number 3, conduct 5 two sample t-tests for each location between 2012 and 2017 and see the significant changes at each MPA and non-MPA location and compare in discussion.
 
