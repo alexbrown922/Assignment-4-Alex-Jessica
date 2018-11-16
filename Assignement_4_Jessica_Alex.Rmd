@@ -145,7 +145,7 @@ traps_col
 ```{r}
 # 2
 
-# Compare mean lobster sizes (carapace length (mm)) across the five sites for lobster observations collected in 2017.
+# Compare mean lobster sizes (carapace length (mm)) across the five sites for lobster observations collected in 2017. Create a bar graph with standard deviation
 
 # create a new df with mean lobster sizes at the 5 locations
 
@@ -191,7 +191,7 @@ lobster_ph <- TukeyHSD(lobster_aov)
 
 lobster_ph
 ```
-Note: Put in-line referencing for F statistic and figure out how to interpret p-values for comparison of sites.
+Note: Put in-line referencing for F statistic and figure out how to interpret p-values for comparison of sites. Use standard error for the graph
 
 Mean lobster sizes (carapace length (mm)) at Arroyo Quemado, Naples Reef, Mohawk Reef, Isla Vista, and Carpinteria locations are significantly differerent in some instances from each other and not significantly different in others. (F(4) = 21.65, p, $\alpha$ = .05 with post-hoc Tukey's HSD, $\alpha = 0.05$.
 
@@ -269,17 +269,19 @@ f_test_arroyo
 
 ### 4
 
-The legal minimum carapace size for lobster is 82.6 mm. What proportion of observed lobsters at each site are above the legal minimum? Does that proportion differ significantly across the 5 sites? (chi-sq)
+The legal minimum carapace size for lobster is 82.6 mm. What proportion of observed lobsters at each site are above the legal minimum? Does that proportion differ significantly across the 5 sites? (chi-sq) 2017
 ```{r}
 # 4
 
 # create a df of lobster sizes above 83 mm at each site
+# legal and non legal column for each site from counts column
 
-lobster_counts <- lobster_abundance_tidy %>%
-  filter(SITE != "NA", SIZE != "NA") %>% 
-  count(SITE, SIZE) %>% 
-  spread(SIZE, n) %>% 
-  select(-SITE)
+lobster_counts <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2017") %>%
+  mutate(SIZE >= "83", SIZE <= "82") %>%
+  rename(SIZE >= "83")
+  group_by(SITE) %>% 
+  select(SITE, SIZE, SIZE >= "83", SIZE <= "82")
   
 lobster_counts
 
