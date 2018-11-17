@@ -157,7 +157,7 @@ mean_lobster_size <- lobster_abundance_tidy %>%
   select(YEAR, SITE, SIZE) %>% 
   filter(YEAR == "2017") %>% 
   group_by(SITE) %>% 
-  summarize(mean = mean(SIZE))
+  summarize(mean = round(mean(SIZE), 2))
 
 mean_lobster_size
 
@@ -168,11 +168,22 @@ mean_lobster_tbl <- mean_lobster_size %>%
         caption = "Mean Lobster Sizes at 5 Locations in 2017") %>% 
   kable_styling(bootstrap_options = c("striped", "hover", full_width = FALSE)) %>% 
   row_spec(row = 5, bold = TRUE, color = "green")
+  
 
 mean_lobster_tbl
 
-# Note for Alex: Add a counts column for each location
+# create a column graph of mean lobster sizes at the 5 locations 
 
+mean_lobster_col <- ggplot(mean_lobster_size, aes(x = SITE, y = mean)) + 
+  geom_col(aes(fill = SITE)) +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_classic() +
+  xlab("Site") +
+  ylab("Mean Carapace Length (mm)") +
+  theme(legend.position = "none") +
+  theme(panel.spacing = unit(1, "lines"))
+
+mean_lobster_col
 
 # Run an ANOVA test
 
@@ -386,27 +397,49 @@ The legal minimum carapace size for lobster is 82.6 mm. What proportion of obser
 ```{r}
 # 4
 
-# create a df of lobster sizes above 83 mm at each site
-# legal and non legal column for each site from counts column
+# create a df of lobster sizes above and below 83 mm at each site; size = "legal" or "not leagal"
+
+lobster_legal <- lobster_abundance_tidy %>% 
+  mutate(size=ifelse(SIZE <= 83, "Not Legal", "Legal")) %>% 
+  filter(YEAR == "2017")
+
+lobster_legal
+
+# create a table for legal and illegal lobster sizes 
+
+lobster_legal_tbl <- lobster_legal %>%
+  count(SITE, size) %>% 
+  spread(size, n) %>% 
+  select(-SITE)
+
+rownames(lobster_legal_tbl) <- c("AQUE", "CARP", "IVEE", "MOHK", "NAPL")
+
+lobster_legal_tbl
+
+# maybe this is useful somehow? counts of lobster sizes at each site
 
 lobster_counts <- lobster_abundance_tidy %>% 
   filter(YEAR == "2017") %>%
   mutate(SIZE >= "83", SIZE <= "82") %>%
-  rename(SIZE >= "83")
   group_by(SITE) %>% 
-  select(SITE, SIZE, SIZE >= "83", SIZE <= "82")
+  select(-MONTH, -DATE, -SBC_LTER_TRANSECT, -LOBSTER_TRANSECT) %>% 
+  count(SITE, SIZE)
   
 lobster_counts
 
 # convert counts to proportions 
-lobster_prop <- prop.table(as.matrix(lobster_counts), 1) # Proportions calculated by row (use 1)
+
+lobster_prop <- prop.table(as.matrix(lobster_legal_tbl))
 
 lobster_prop
 
-# run a chi-sq test 
+# run a chi-sq test
 
-lobster_x2 <- chisq.test(lobster_counts)
+# We ask: "Is there a significant association between site and lobster carapace length (mm)?"
+
+lobster_x2 <- chisq.test(lobster_prop)
 
 lobster_x2
 ```
 
+"Lobster carapace length (mm) differed insignificantly between AQUE (n = ), Carpinteria (n = ), Isla Vista (n = ), MOHK (n = ), and Naples (n = ) ($\chi^2$(`r lobster_x2$parameter`) =  ....., p = 1).
