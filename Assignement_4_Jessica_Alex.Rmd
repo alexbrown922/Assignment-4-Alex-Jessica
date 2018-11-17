@@ -12,7 +12,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r, include = FALSE}
 
 # A. Load packages and read in data files.
-# Alex, install vcdExtra before loading this package
 
 
 library(tidyverse)
@@ -43,13 +42,12 @@ lobster_traps <- read_csv("lobster_traps.csv")
 # First, simplify lobster_abundance data frame by removing rows with COUNT = 0
 
 lobster_abundance_simp <- lobster_abundance %>% 
-  filter(COUNT != 0) %>% 
-  as.data.frame(lobster_abundance_simp) %>% 
+  filter(COUNT != 0) %>%  
   group_by(SITE, YEAR)
 
 # Second, create tidy formatted data frame using expand.dft
 
-lobster_abundance_tidy <- expand.dft(lobster_abundance_simp, var.names = NULL, freq = "COUNT")
+lobster_abundance_tidy <- expand.dft(as.data.frame(lobster_abundance_simp), var.names = NULL, freq = "COUNT")
 
 # Use lobster_abundance_tidy for all calculations (except column graph)
 
@@ -61,7 +59,7 @@ lobster_traps_simp <- lobster_traps %>%
 
 ```
 
-```{r}
+```{r, fig.height=5}
 
 # C. Determine the best graphical way to depict abundance and traps data: column or line graphs? Create column graphs and line graphs of lobster abundance by year at each of the 5 sites
 
@@ -86,10 +84,10 @@ abundance_col <- ggplot(size_summary_graphs, aes(x = YEAR, y = sample_size))+
   theme_classic() +
   xlab("\nYear") +
   ylab("Lobster Count\n") +
-  facet_wrap(~SITE, scale = "free", labeller = labeller(SITE = labels)) +
+  facet_wrap(~SITE, scales = "free", labeller = labeller(SITE = labels)) +
+  facet_grid(cols = vars(SITE), scales = "free_y", labeller = labeller(SITE = labels)) +
   theme(legend.position = "none") +
-  theme(panel.spacing = unit(1, "lines"))
-  
+  theme(panel.spacing = unit(1, "lines")) 
 
 abundance_col
 
@@ -104,6 +102,8 @@ abundance_line <- ggplot(size_summary_graphs, aes(x = YEAR, y = sample_size, gro
 abundance_line
 
 # Note for Jess: Need to add space between facet_wrap labels and plots
+# Note for Jess: Match this graph's colors to other graph
+# Note for Jess: free scales in facet_grid
 
 # I prefer the column graph - easier to visualize changes per location
     
@@ -112,17 +112,20 @@ abundance_line
 **Figure 1. California Spiny Lobster Abundance at Five Long-Term Ecological Research Sites in the Santa Barbara Channel, 2012-2017.** Divers collected lobster abundance data for Panulirus interruptus at each of the five sites each year in late summer, before the start of the fishing season. The sites are Arroyo Quemado (AQUE), Naples Reef (NAPL), Mohawk Reef (MOHK), Isla Vista (IVEE), and Carpinteria (CARP). NAPL and IVEE are marine protected areas; AQUE, MOHK, and CARP are non-marine protected areas. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project. 
 
 
-```{r}
+```{r, fig.height=4}
 
 # D. Create column graphs of fishing pressure (trap buoys) by year at each of the 5 sites
 
-traps_col <- ggplot(lobster_traps_simp, aes(x = YEAR, y = TRAPS))+
+traps_col <- lobster_traps_simp %>% 
+  filter(SITE != "IVEE",
+         SITE != "NAPL") %>% 
+  ggplot(aes(x = YEAR, y = TRAPS))+
   geom_col(aes(fill = SITE)) +
   scale_y_continuous(expand = c(0,0)) +
   theme_classic() +
   xlab("\nYear") +
   ylab("Number of Traps\n") +
-  facet_wrap(~SITE, scale = "free", labeller = labeller(SITE = labels)) +
+  facet_wrap(~SITE, labeller = labeller(SITE = labels)) +
   theme(legend.position = "none") +
   theme(panel.spacing = unit(1, "lines"))
   
@@ -131,9 +134,10 @@ traps_col
 
 
 # Note for Jess: Need to add space between facet_wrap labels and plots
+# Note for Jess: Match this graph's colors to other graph
 
 ```
-**Figure 2. Commercial Lobster Trap Floats at Five Long-Term Ecological Research Sites in the Santa Barbara Channel, 2012-2017.** Data on the number of floats was collected every two to four weeks Oct-Mar, during the lobster fishing season. Commercial lobster trap floats act as indicators of fishing pressure at each location. NAPL and IVEE lack commercial trap floats because they are marine protected areas. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project. 
+**Figure 2. Commercial Lobster Trap Floats at Long-Term Ecological Research Sites in the Santa Barbara Channel, 2012-2017.** Data on the number of floats was collected every two to four weeks Oct-Mar, during the lobster fishing season. Commercial lobster trap floats act as indicators of fishing pressure at each location. NAPL and IVEE lack commercial trap floats because they are marine protected areas. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project. 
 
 
 
@@ -213,7 +217,7 @@ IVEE-CARP
 
 
 
-Note for Jess: For number 3, conduct 5 two sample t-tests for each location between 2012 and 2017 and see the significant changes at each MPA and non-MPA location and compare in discussion.
+For number 3, conduct 5 two sample t-tests for each location between 2012 and 2017 and see the significant changes at each MPA and non-MPA location and compare in discussion.
 
 ```{r}
 
@@ -222,17 +226,38 @@ Note for Jess: For number 3, conduct 5 two sample t-tests for each location betw
 
 # First, look at data and see if its normal
 
-size_hist <- ggplot(lobster_abundance_tidy, aes(x = SIZE)) +
+size_hist_2012 <- lobster_abundance_tidy %>% 
+  filter( YEAR == "2012") %>% 
+  ggplot(aes(x = SIZE)) +
+  geom_histogram() +
+  facet_wrap(~ SITE) 
+
+size_hist_2012
+
+size_hist_2017 <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2017") %>% 
+  ggplot(aes(x = SIZE)) +
   geom_histogram() +
   facet_wrap(~ SITE)
 
-size_hist
+size_hist_2017
 
-size_qq <- ggplot(lobster_abundance_tidy, aes(sample = SIZE)) +
+
+size_qq_2012 <-lobster_abundance_tidy %>% 
+  filter( YEAR == "2012") %>% 
+  ggplot(aes(sample = SIZE)) +
   geom_qq() +
   facet_wrap(~ SITE)
 
-size_qq
+size_qq_2012
+
+size_qq_2017 <-lobster_abundance_tidy %>% 
+  filter( YEAR == "2017") %>% 
+  ggplot(aes(sample = SIZE)) +
+  geom_qq() +
+  facet_wrap(~ SITE)
+
+size_qq_2017
 
 size_summary <- lobster_abundance_tidy %>% 
   group_by(SITE, YEAR) %>% 
@@ -243,8 +268,15 @@ size_summary <- lobster_abundance_tidy %>%
 
 size_summary
 
-# Based on the histograms and qq-plots, the size data for the sites are approximately normal. However, certain sites have very small sample sizes, so is it correct to compare the samples using t-tests?
+# Based on the histograms and qq-plots, the size data for the sites are approximately normal, except for Naples 2012, which only has 5 samples. We can use t-tests for these samples because the t-distribution allows for some uncertainty. 
 
+
+```
+
+```{r}
+
+# 3. At Isla Vista and Naples Reef, the two protected MPA sites (with zero fishing pressure), how do lobster sizes in 2012 and 2017 compare? At the non-MPA sites?
+# Run 5 two-sample t-tests for each location, with samples being 2012 and 2017
 
 # Second, do F-tests for equal variance for each site to determine if we will use a Welch's t-test or Student's t-test 
 
@@ -258,13 +290,94 @@ f_test_arroyo <- lobster_abundance_tidy %>%
 
 f_test_arroyo
 
-# Based on the F-test, for Arroyo, we fail to reject the null that the variances for the 2012 and 2017 samples are equal (p = 0.069). Use a student's t-test.
+# Based on the F-test, for Arroyo, we fail to reject the null that the variances for the 2012 and 2017 samples are equal (p = 0.298). Use a student's t-test.
 
-f_test_arroyo <- lobster_abundance_tidy %>% 
-  filter(YEAR == "2012" | YEAR == "2017", SITE == "AQUE") %>% 
+f_test_carp <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2012" | YEAR == "2017", SITE == "CARP") %>% 
   var.test(SIZE ~ YEAR, data = .)
 
-f_test_arroyo
+f_test_carp
+
+# Based on the F-test, for Carpinteria, we fail to reject the null that the variances for the 2012 and 2017 samples are equal (p = 0.204). Use student's t-test.
+
+f_test_ivee <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2012" | YEAR == "2017", SITE == "IVEE") %>% 
+  var.test(SIZE ~ YEAR, data = .)
+
+f_test_ivee
+
+# Based on the F-test, for Isla Vista, we fail to reject the null that the variances for the 2012 and 2017 samples are equal (p = 0.307). Use student's t-test.
+
+f_test_mohk <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2012" | YEAR == "2017", SITE == "MOHK") %>% 
+  var.test(SIZE ~ YEAR, data = .)
+
+f_test_mohk
+
+# Based on the F-test, for Mohawk Reef, we fail to reject the null that the variances for the 2012 and 2017 samples are equal (p = 0.151). Use student's t-test.
+
+f_test_napl <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2012" | YEAR == "2017", SITE == "NAPL") %>% 
+  var.test(SIZE ~ YEAR, data = .)
+
+f_test_napl
+
+# Based on the F-test, for Naples Reef, we fail to reject the null that the variances for the 2012 and 2017 samples are equal (p = 0.768). Use student's t-test.
+
+
+```
+
+```{r}
+
+# 3. At Isla Vista and Naples Reef, the two protected MPA sites (with zero fishing pressure), how do lobster sizes in 2012 and 2017 compare? At the non-MPA sites?
+# Run 5 two-sample t-tests for each location, with samples being 2012 and 2017
+
+# Third, run 5 student's t-tests for 2012 and 2017 lobster sizes at each location:
+
+# Null: There is no significant difference in sizes for 2012 and 2017 lobster samples
+# Alternative: There is a significant difference in sizes for 2012 and 2017 lobster samples
+
+arroyo_ttest <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2012" | YEAR == "2017", SITE == "AQUE") %>% 
+  t.test(SIZE ~ YEAR, var.equal = TRUE, data = .)
+
+arroyo_ttest
+
+# Based on the student's t-test, there is no significant difference in mean sizes for lobster samples collected in 2012 and 2017 at Arroyo Quemado (p = `r round(arroyo_ttest$p.value,3)).
+
+carp_ttest <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2012" | YEAR == "2017", SITE == "CARP") %>% 
+  t.test(SIZE ~ YEAR, var.equal = TRUE, data = .)
+
+carp_ttest
+
+# Based on the student's t-test, there is no significant difference in mean sizes for lobster samples collected in 2012 and 2017 at Carpinteria (p = `r round(carp_ttest$p.value,3)).
+
+ivee_ttest <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2012" | YEAR == "2017", SITE == "IVEE") %>% 
+  t.test(SIZE ~ YEAR, var.equal = TRUE, data = .)
+
+ivee_ttest
+
+# Based on the student's t-test, there is no significant difference in mean sizes for lobster samples collected in 2012 and 2017 at Isla Vista (p = `r round(ivee_ttest$p.value,3)).
+
+mohk_ttest <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2012" | YEAR == "2017", SITE == "MOHK") %>% 
+  t.test(SIZE ~ YEAR, var.equal = TRUE, data = .)
+
+mohk_ttest
+
+# Based on the student's t-test, there IS a significant difference in mean sizes for lobster samples collected in 2012 and 2017 at Mohawk Reef (p < 0.05).
+
+napl_ttest <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2012" | YEAR == "2017", SITE == "NAPL") %>% 
+  t.test(SIZE ~ YEAR, var.equal = TRUE, data = .)
+
+napl_ttest
+
+# Based on the student's t-test, there is no significant difference in mean sizes for lobster samples collected in 2012 and 2017 at Naples (p = `r round(napl_ttest$p.value,3)).
+
+
 ```
 
 ### 4
