@@ -27,6 +27,7 @@ library(effsize)
 library(ggpubr)
 library(vcdExtra)
 library(dplyr)
+library(RColorBrewer)
 
 lobster_abundance <- read_csv("lobster_size_abundance.csv")
 
@@ -78,8 +79,10 @@ size_summary_graphs
 
 labels <- c(AQUE = "Arroyo Quemado", CARP = "Carpinteria", IVEE = "Isla Vista", MOHK = "Mohawk Reef", NAPL = "Naples Reef")
 
+
 abundance_col <- ggplot(size_summary_graphs, aes(x = YEAR, y = sample_size))+
   geom_col(aes(fill = SITE)) +
+  scale_fill_manual(values = c("seagreen3", "violetred1", "sienna1", "slateblue1", "paleturquoise3")) +
   scale_y_continuous(expand = c(0,0)) +
   theme_classic() +
   xlab("\nYear") +
@@ -102,7 +105,6 @@ abundance_line <- ggplot(size_summary_graphs, aes(x = YEAR, y = sample_size, gro
 abundance_line
 
 # Note for Jess: Need to add space between facet_wrap labels and plots
-# Note for Jess: Match this graph's colors to other graph
 # Note for Jess: free scales in facet_grid
 
 # I prefer the column graph - easier to visualize changes per location
@@ -121,6 +123,7 @@ traps_col <- lobster_traps_simp %>%
          SITE != "NAPL") %>% 
   ggplot(aes(x = YEAR, y = TRAPS))+
   geom_col(aes(fill = SITE)) +
+  scale_fill_manual(values = c("seagreen3", "violetred1", "slateblue1")) +
   scale_y_continuous(expand = c(0,0)) +
   theme_classic() +
   xlab("\nYear") +
@@ -134,7 +137,6 @@ traps_col
 
 
 # Note for Jess: Need to add space between facet_wrap labels and plots
-# Note for Jess: Match this graph's colors to other graph
 
 ```
 **Figure 2. Commercial Lobster Trap Floats at Long-Term Ecological Research Sites in the Santa Barbara Channel, 2012-2017.** Data on the number of floats was collected every two to four weeks Oct-Mar, during the lobster fishing season. Commercial lobster trap floats act as indicators of fishing pressure at each location. NAPL and IVEE lack commercial trap floats because they are marine protected areas. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project. 
@@ -348,13 +350,27 @@ f_test_napl
 # Null: There is no significant difference in sizes for 2012 and 2017 lobster samples
 # Alternative: There is a significant difference in sizes for 2012 and 2017 lobster samples
 
+# Fourth, run Cohen's D to determine effect sizes
+
+
+
 arroyo_ttest <- lobster_abundance_tidy %>% 
   filter(YEAR == "2012" | YEAR == "2017", SITE == "AQUE") %>% 
   t.test(SIZE ~ YEAR, var.equal = TRUE, data = .)
 
 arroyo_ttest
 
-# Based on the student's t-test, there is no significant difference in mean sizes for lobster samples collected in 2012 and 2017 at Arroyo Quemado (p = `r round(arroyo_ttest$p.value,3)).
+# Based on the student's t-test, there is no significant difference in mean sizes for lobster samples collected in 2012 and 2017 at Arroyo Quemado (p = 0.209, `r round(arroyo_ttest$p.value,3)).
+
+arroyo_eff_size <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2012" | YEAR == "2017", SITE == "AQUE") %>% 
+  cohen.d(SIZE ~ YEAR, data = .)
+
+arroyo_eff_size
+
+# Small Cohen's D (-0.256, `r round(arroyo_eff_size$estimate,2)`)
+
+
 
 carp_ttest <- lobster_abundance_tidy %>% 
   filter(YEAR == "2012" | YEAR == "2017", SITE == "CARP") %>% 
@@ -362,7 +378,17 @@ carp_ttest <- lobster_abundance_tidy %>%
 
 carp_ttest
 
-# Based on the student's t-test, there is no significant difference in mean sizes for lobster samples collected in 2012 and 2017 at Carpinteria (p = `r round(carp_ttest$p.value,3)).
+# Based on the student's t-test, there is no significant difference in mean sizes for lobster samples collected in 2012 and 2017 at Carpinteria (p = 0.182, `r round(carp_ttest$p.value,3)).
+
+carp_eff_size <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2012" | YEAR == "2017", SITE == "CARP") %>% 
+  cohen.d(SIZE ~ YEAR, data = .)
+
+carp_eff_size
+
+# Cohen's D is negligible. 
+
+
 
 ivee_ttest <- lobster_abundance_tidy %>% 
   filter(YEAR == "2012" | YEAR == "2017", SITE == "IVEE") %>% 
@@ -370,7 +396,17 @@ ivee_ttest <- lobster_abundance_tidy %>%
 
 ivee_ttest
 
-# Based on the student's t-test, there is no significant difference in mean sizes for lobster samples collected in 2012 and 2017 at Isla Vista (p = `r round(ivee_ttest$p.value,3)).
+# Based on the student's t-test, there is no significant difference in mean sizes for lobster samples collected in 2012 and 2017 at Isla Vista (p = 0.059, `r round(ivee_ttest$p.value,3)).
+
+ivee_eff_size <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2012" | YEAR == "2017", SITE == "IVEE") %>% 
+  cohen.d(SIZE ~ YEAR, data = .)
+
+ivee_eff_size
+
+# Small COhen's D (-0.377, `r round(ivee_eff_size$estimate,2)`)
+
+
 
 mohk_ttest <- lobster_abundance_tidy %>% 
   filter(YEAR == "2012" | YEAR == "2017", SITE == "MOHK") %>% 
@@ -380,16 +416,38 @@ mohk_ttest
 
 # Based on the student's t-test, there IS a significant difference in mean sizes for lobster samples collected in 2012 and 2017 at Mohawk Reef (p < 0.05).
 
+mohk_eff_size <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2012" | YEAR == "2017", SITE == "MOHK") %>% 
+  cohen.d(SIZE ~ YEAR, data = .)
+
+mohk_eff_size
+
+# Medium Cohen's D (0.54, `r round(mohk_eff_size$estimate,2)`)
+
+
+
 napl_ttest <- lobster_abundance_tidy %>% 
   filter(YEAR == "2012" | YEAR == "2017", SITE == "NAPL") %>% 
   t.test(SIZE ~ YEAR, var.equal = TRUE, data = .)
 
 napl_ttest
 
-# Based on the student's t-test, there is no significant difference in mean sizes for lobster samples collected in 2012 and 2017 at Naples (p = `r round(napl_ttest$p.value,3)).
 
+# Based on the student's t-test, there is no significant difference in mean sizes for lobster samples collected in 2012 and 2017 at Naples (p = 0.500, `r round(napl_ttest$p.value,3)).
+
+napl_eff_size <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2012" | YEAR == "2017", SITE == "NAPL") %>% 
+  cohen.d(SIZE ~ YEAR, data = .)
+
+napl_eff_size
+
+# Small effect size, Cohen's D = (-0.283, `r round(napl_eff_size$estimate,2)`)
+
+# Difference in means = (`r diff(napl_ttest$estimate)`)
 
 ```
+California spiny lobster sizes were measured by divers at marine protected areas (Isla Vista and Naples Reef) and non-marine protected areas (Arroyo Quemado, Carpinteria, and Mohawk Reef) in 2012 and 2017. Of the five locations, only lobsters at Mohawk Reef exhibited a significant change in mean size between 2012 (mean +/- sd) and 2017 (mean +/- sd), based on results from a two-sample Student's t-test [t(`r round(mohk_ttest$parameter,2)`) = `r round(mohk_ttest$statistic,2)`, *p* < 0.05, $\alpha$ = 0.05]. In addition, the effect size is moderate (Cohen's d = `r round(mohk_eff_size$estimate,2)`).
+
 
 ### 4
 
