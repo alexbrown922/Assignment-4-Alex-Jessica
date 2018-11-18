@@ -473,6 +473,8 @@ lobster_prop
 lobster_x2 <- chisq.test(lobster_legal_tbl)
 
 lobster_x2
+
+# GOT IT - Jess
 ```
 
 "Lobster carapace length (mm) differed insignificantly between AQUE (n = ), Carpinteria (n = ), Isla Vista (n = ), MOHK (n = ), and Naples (n = ) ($\chi^2$(`r lobster_x2$parameter`) =  ....., p = 1).
