@@ -470,8 +470,7 @@ lobster_prop
 
 # We ask: "Is there a significant association between site and legal lobster carapace length (mm)?"
 
-lobster_x2 <- chisq.test(lobster_prop,
-                         simulate.p.value = TRUE)
+lobster_x2 <- chisq.test(lobster_legal_tbl)
 
 lobster_x2
 ```
