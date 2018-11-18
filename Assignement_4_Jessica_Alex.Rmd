@@ -155,37 +155,29 @@ traps_col
 
 # create a new df with mean lobster sizes at the 5 locations
 
+# rename sites within column
+
 mean_lobster_size <- lobster_abundance_tidy %>% 
   select(YEAR, SITE, SIZE) %>% 
   filter(YEAR == "2017") %>% 
   group_by(SITE) %>% 
-  summarize(mean = round(mean(SIZE), 2))
+  summarize(mean = round(mean(SIZE), 2),
+            sd = round(sd(SIZE))) 
+
+rownames(mean_lobster_size) <- c("Arroyo Quemado", "Carpenteria", "Isla Vista", "Mohawk Reef", "Naples Reef")
 
 mean_lobster_size
 
 # create a table comparing mean lobster sizes at the 5 locations
 
 mean_lobster_tbl <- mean_lobster_size %>% 
-  kable(col.names = c("Site", "Mean Lobster Carapace Length (mm)"),
-        caption = "Mean Lobster Sizes at 5 Locations in 2017") %>% 
-  kable_styling(bootstrap_options = c("striped", "hover", full_width = FALSE)) %>% 
-  row_spec(row = 5, bold = TRUE, color = "green")
+  kable(col.names = c("Site", "Mean Lobster Carapace Length (mm)", "Standard Deviation (mm)"),
+        caption = "Mean Lobster Sizes at 5 Locations in 2017. ") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>% 
+  row_spec(row = 5, bold = TRUE)
   
-
 mean_lobster_tbl
 
-# create a column graph of mean lobster sizes at the 5 locations 
-
-mean_lobster_col <- ggplot(mean_lobster_size, aes(x = SITE, y = mean)) + 
-  geom_col(aes(fill = SITE)) +
-  scale_y_continuous(expand = c(0,0)) +
-  theme_classic() +
-  xlab("Site") +
-  ylab("Mean Carapace Length (mm)") +
-  theme(legend.position = "none") +
-  theme(panel.spacing = unit(1, "lines"))
-
-mean_lobster_col
 
 # Run an ANOVA test
 
@@ -198,7 +190,9 @@ mean_lobster_col
 # HO: mean lobster sizes across all sites are equal
 # HA: At least two means differ significantly 
 
-lobster_aov <- aov(SIZE ~ SITE, data = lobster_abundance_tidy)
+lobster_aov <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2017") %>%
+  aov(SIZE ~ SITE, data = .)
 
 summary(lobster_aov)
 
@@ -214,19 +208,11 @@ Mean lobster sizes (carapace length (mm)) at Arroyo Quemado, Naples Reef, Mohawk
 
 Sig-diff: 
 
-NAPL-AQUE
-MOHK-CARP
-NAPL-CARP
-MOHK-IVEE
-NAPL-IVEE
-NAPL-MOHK
+
 
 Not sig-diff:
 
-CARP-AQUE
-IVEE-AQUE
-MOHK-AQUE
-IVEE-CARP
+
 
 
 
@@ -470,22 +456,12 @@ lobster_legal_tbl <- lobster_legal %>%
   spread(size, n) %>% 
   select(-SITE)
 
-rownames(lobster_legal_tbl) <- c("AQUE", "CARP", "IVEE", "MOHK", "NAPL")
+rownames(lobster_legal_tbl) <- c("Arroyo Quemado", "Carpenteria", "Isla Vista", "Mohawk Reef", "Naples Reef")
 
 lobster_legal_tbl
 
-# maybe this is useful somehow? counts of lobster sizes at each site
 
-lobster_counts <- lobster_abundance_tidy %>% 
-  filter(YEAR == "2017") %>%
-  mutate(SIZE >= "83", SIZE <= "82") %>%
-  group_by(SITE) %>% 
-  select(-MONTH, -DATE, -SBC_LTER_TRANSECT, -LOBSTER_TRANSECT) %>% 
-  count(SITE, SIZE)
-  
-lobster_counts
-
-# convert counts to proportions 
+# convert counts to proportions from lobster_legal_tbl
 
 lobster_prop <- prop.table(as.matrix(lobster_legal_tbl))
 
@@ -493,7 +469,7 @@ lobster_prop
 
 # run a chi-sq test
 
-# We ask: "Is there a significant association between site and lobster carapace length (mm)?"
+# We ask: "Is there a significant association between site and legal lobster carapace length (mm)?"
 
 lobster_x2 <- chisq.test(lobster_prop)
 
