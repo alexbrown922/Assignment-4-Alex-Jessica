@@ -151,7 +151,8 @@ mean_lobster_size <- lobster_abundance_tidy %>%
   filter(YEAR == "2017") %>% 
   group_by(SITE) %>% 
   summarize(mean = round(mean(SIZE), 2),
-            sd = round(sd(SIZE))) 
+            sd = round(sd(SIZE)))  %>% 
+  select(mean, sd)
 
 rownames(mean_lobster_size) <- c("Arroyo Quemado", "Carpenteria", "Isla Vista", "Mohawk Reef", "Naples Reef")
 
@@ -160,7 +161,7 @@ mean_lobster_size
 # create a table comparing mean lobster sizes at the 5 locations
 
 mean_lobster_tbl <- mean_lobster_size %>% 
-  kable(col.names = c("Site", "Mean Lobster Carapace Length (mm)", "Standard Deviation (mm)"),
+  kable(col.names = c("Mean Lobster Carapace Length (mm)", "Standard Deviation (mm)"),
         caption = "**Table 1. Mean Lobster Sizes at 5 Locations in 2017.** Researchers collected Panulirus interruptus lobster abundance in 2017 at the sites of Arroyo Quemado (AQUE), Naples Reef (NAPL), Mohawk Reef (MOHK), Isla Vista (IVEE), and Carpinteria (CARP). Listed are the average carapace length (mm) of lobsters collected at each location and the standard deviation of the samples taken at each location. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project.") %>% 
   kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>% 
   row_spec(row = 5, bold = TRUE)
