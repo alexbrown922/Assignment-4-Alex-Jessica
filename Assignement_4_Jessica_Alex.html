@@ -165,23 +165,24 @@ mean_lobster_size &lt;- lobster_abundance_tidy %&gt;%
   filter(YEAR == &quot;2017&quot;) %&gt;% 
   group_by(SITE) %&gt;% 
   summarize(mean = round(mean(SIZE), 2),
-            sd = round(sd(SIZE))) 
+            sd = round(sd(SIZE)))  %&gt;% 
+  select(mean, sd)
 
 rownames(mean_lobster_size) &lt;- c(&quot;Arroyo Quemado&quot;, &quot;Carpenteria&quot;, &quot;Isla Vista&quot;, &quot;Mohawk Reef&quot;, &quot;Naples Reef&quot;)</code></pre>
 <pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
 <pre class="r"><code>mean_lobster_size</code></pre>
-<pre><code>## # A tibble: 5 x 3
-##   SITE   mean    sd
-## * &lt;fct&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 AQUE   73.9    12
-## 2 CARP   72.2    13
-## 3 IVEE   71.4    14
-## 4 MOHK   72       9
-## 5 NAPL   76.2    11</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##    mean    sd
+## * &lt;dbl&gt; &lt;dbl&gt;
+## 1  73.9    12
+## 2  72.2    13
+## 3  71.4    14
+## 4  72       9
+## 5  76.2    11</code></pre>
 <pre class="r"><code># create a table comparing mean lobster sizes at the 5 locations
 
 mean_lobster_tbl &lt;- mean_lobster_size %&gt;% 
-  kable(col.names = c(&quot;Site&quot;, &quot;Mean Lobster Carapace Length (mm)&quot;, &quot;Standard Deviation (mm)&quot;),
+  kable(col.names = c(&quot;Mean Lobster Carapace Length (mm)&quot;, &quot;Standard Deviation (mm)&quot;),
         caption = &quot;**Table 1. Mean Lobster Sizes at 5 Locations in 2017.** Researchers collected Panulirus interruptus lobster abundance in 2017 at the sites of Arroyo Quemado (AQUE), Naples Reef (NAPL), Mohawk Reef (MOHK), Isla Vista (IVEE), and Carpinteria (CARP). Listed are the average carapace length (mm) of lobsters collected at each location and the standard deviation of the samples taken at each location. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project.&quot;) %&gt;% 
   kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;), full_width = FALSE) %&gt;% 
   row_spec(row = 5, bold = TRUE)
@@ -194,9 +195,6 @@ mean_lobster_tbl</code></pre>
 <thead>
 <tr>
 <th style="text-align:left;">
-</th>
-<th style="text-align:left;">
-Site
 </th>
 <th style="text-align:right;">
 Mean Lobster Carapace Length (mm)
@@ -211,9 +209,6 @@ Standard Deviation (mm)
 <td style="text-align:left;">
 Arroyo Quemado
 </td>
-<td style="text-align:left;">
-AQUE
-</td>
 <td style="text-align:right;">
 73.90
 </td>
@@ -224,9 +219,6 @@ AQUE
 <tr>
 <td style="text-align:left;">
 Carpenteria
-</td>
-<td style="text-align:left;">
-CARP
 </td>
 <td style="text-align:right;">
 72.23
@@ -239,9 +231,6 @@ CARP
 <td style="text-align:left;">
 Isla Vista
 </td>
-<td style="text-align:left;">
-IVEE
-</td>
 <td style="text-align:right;">
 71.45
 </td>
@@ -253,9 +242,6 @@ IVEE
 <td style="text-align:left;">
 Mohawk Reef
 </td>
-<td style="text-align:left;">
-MOHK
-</td>
 <td style="text-align:right;">
 72.00
 </td>
@@ -266,9 +252,6 @@ MOHK
 <tr>
 <td style="text-align:left;font-weight: bold;">
 Naples Reef
-</td>
-<td style="text-align:left;font-weight: bold;">
-NAPL
 </td>
 <td style="text-align:right;font-weight: bold;">
 76.23

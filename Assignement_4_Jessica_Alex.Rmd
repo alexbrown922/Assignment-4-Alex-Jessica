@@ -137,7 +137,7 @@ traps_col
 ###2
 
 
-```{r}
+```{r, echo=FALSE}
 # 2
 
 # Compare mean lobster sizes (carapace length (mm)) across the five sites for lobster observations collected in 2017.
@@ -437,7 +437,7 @@ California spiny lobster sizes were measured by divers at marine protected areas
 ### 4
 
 The legal minimum carapace size for lobster is 82.6 mm. What proportion of observed lobsters at each site are above the legal minimum? Does that proportion differ significantly across the 5 sites? (chi-sq) 2017
-```{r}
+```{r, echo=FALSE}
 # 4
 
 # create a df of lobster sizes above and below 83 mm at each site; size = "legal" or "not leagal"
@@ -477,4 +477,3 @@ lobster_x2
 # GOT IT - Jess
 ```
 
-"Lobster carapace length (mm) differed insignificantly between AQUE (n = ), Carpinteria (n = ), Isla Vista (n = ), MOHK (n = ), and Naples (n = ) ($\chi^2$(`r lobster_x2$parameter`) =  ....., p = 1).
