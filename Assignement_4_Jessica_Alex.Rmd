@@ -36,7 +36,7 @@ lobster_traps <- read_csv("lobster_traps.csv")
 ```
 
 ###1
-```{r}
+```{r, include = FALSE}
 
 # B. Display data frame lobster_abundance in tidy format
 
@@ -60,7 +60,7 @@ lobster_traps_simp <- lobster_traps %>%
 
 ```
 
-```{r, fig.height=5}
+```{r, fig.height=5, echo = FALSE}
 
 # C. Determine the best graphical way to depict abundance and traps data: column or line graphs? Create column graphs and line graphs of lobster abundance by year at each of the 5 sites
 
@@ -95,26 +95,15 @@ abundance_col <- ggplot(size_summary_graphs, aes(x = YEAR, y = sample_size))+
 abundance_col
 
 
-abundance_line <- ggplot(size_summary_graphs, aes(x = YEAR, y = sample_size, group = SITE)) +
-  geom_line(aes(color = SITE)) +
-  geom_point() + 
-  theme_classic() +
-  xlab("\nYear") +
-  ylab("Count\n") 
-
-abundance_line
-
 # Note for Jess: Need to add space between facet_wrap labels and plots
 # Note for Jess: free scales in facet_grid
-
-# I prefer the column graph - easier to visualize changes per location
     
     
 ```
-**Figure 1. California Spiny Lobster Abundance at Five Long-Term Ecological Research Sites in the Santa Barbara Channel, 2012-2017.** Divers collected lobster abundance data for Panulirus interruptus at each of the five sites each year in late summer, before the start of the fishing season. The sites are Arroyo Quemado (AQUE), Naples Reef (NAPL), Mohawk Reef (MOHK), Isla Vista (IVEE), and Carpinteria (CARP). NAPL and IVEE are marine protected areas; AQUE, MOHK, and CARP are non-marine protected areas. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project. 
+**Figure 2. California Spiny Lobster Abundance at Five Long-Term Ecological Research Sites in the Santa Barbara Channel, 2012-2017.** Divers collected lobster abundance data for Panulirus interruptus at each of the five sites each year in late summer, before the start of the fishing season. The sites are Arroyo Quemado (AQUE), Naples Reef (NAPL), Mohawk Reef (MOHK), Isla Vista (IVEE), and Carpinteria (CARP). NAPL and IVEE are marine protected areas; AQUE, MOHK, and CARP are non-marine protected areas. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project. 
 
 
-```{r, fig.height=4}
+```{r, fig.height=4, echo = FALSE}
 
 # D. Create column graphs of fishing pressure (trap buoys) by year at each of the 5 sites
 
@@ -139,7 +128,7 @@ traps_col
 # Note for Jess: Need to add space between facet_wrap labels and plots
 
 ```
-**Figure 2. Commercial Lobster Trap Floats at Long-Term Ecological Research Sites in the Santa Barbara Channel, 2012-2017.** Data on the number of floats was collected every two to four weeks Oct-Mar, during the lobster fishing season. Commercial lobster trap floats act as indicators of fishing pressure at each location. NAPL and IVEE lack commercial trap floats because they are marine protected areas. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project. 
+**Figure 3. Commercial Lobster Trap Floats at Long-Term Ecological Research Sites in the Santa Barbara Channel, 2012-2017.** Data on the number of floats was collected every two to four weeks Oct-Mar, during the lobster fishing season. Commercial lobster trap floats act as indicators of fishing pressure at each location. NAPL and IVEE lack commercial trap floats because they are marine protected areas. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project. 
 
 
 
@@ -172,7 +161,7 @@ mean_lobster_size
 
 mean_lobster_tbl <- mean_lobster_size %>% 
   kable(col.names = c("Site", "Mean Lobster Carapace Length (mm)", "Standard Deviation (mm)"),
-        caption = "Mean Lobster Sizes at 5 Locations in 2017. Researchers collected Panulirus interruptus lobster abundance in 2017 at the sites of Arroyo Quemado (AQUE), Naples Reef (NAPL), Mohawk Reef (MOHK), Isla Vista (IVEE), and Carpinteria (CARP). Listed are the average carapace length (mm) of lobsters collected at each location and the standard deviation of the samples taken at each location. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project.") %>% 
+        caption = "**Table 1. Mean Lobster Sizes at 5 Locations in 2017.** Researchers collected Panulirus interruptus lobster abundance in 2017 at the sites of Arroyo Quemado (AQUE), Naples Reef (NAPL), Mohawk Reef (MOHK), Isla Vista (IVEE), and Carpinteria (CARP). Listed are the average carapace length (mm) of lobsters collected at each location and the standard deviation of the samples taken at each location. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project.") %>% 
   kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>% 
   row_spec(row = 5, bold = TRUE)
   
@@ -227,7 +216,7 @@ MOHK-IVEE
 
 For number 3, conduct 5 two sample t-tests for each location between 2012 and 2017 and see the significant changes at each MPA and non-MPA location and compare in discussion.
 
-```{r}
+```{r, include = FALSE}
 
 # 3. At Isla Vista and Naples Reef, the two protected MPA sites (with zero fishing pressure), how do lobster sizes in 2012 and 2017 compare? At the non-MPA sites?
 # Run 5 two-sample t-tests for each location, with samples being 2012 and 2017
@@ -281,7 +270,7 @@ size_summary
 
 ```
 
-```{r}
+```{r, include = FALSE}
 
 # 3. At Isla Vista and Naples Reef, the two protected MPA sites (with zero fishing pressure), how do lobster sizes in 2012 and 2017 compare? At the non-MPA sites?
 # Run 5 two-sample t-tests for each location, with samples being 2012 and 2017
