@@ -152,25 +152,7 @@ $(document).ready(function () {
 </div>
 <div id="section-1" class="section level3">
 <h3>2</h3>
-<pre class="r"><code># 2
-
-# Compare mean lobster sizes (carapace length (mm)) across the five sites for lobster observations collected in 2017.
-
-# create a new df with mean lobster sizes at the 5 locations
-
-# rename sites within column
-
-mean_lobster_size &lt;- lobster_abundance_tidy %&gt;% 
-  select(YEAR, SITE, SIZE) %&gt;% 
-  filter(YEAR == &quot;2017&quot;) %&gt;% 
-  group_by(SITE) %&gt;% 
-  summarize(mean = round(mean(SIZE), 2),
-            sd = round(sd(SIZE)))  %&gt;% 
-  select(mean, sd)
-
-rownames(mean_lobster_size) &lt;- c(&quot;Arroyo Quemado&quot;, &quot;Carpenteria&quot;, &quot;Isla Vista&quot;, &quot;Mohawk Reef&quot;, &quot;Naples Reef&quot;)</code></pre>
 <pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
-<pre class="r"><code>mean_lobster_size</code></pre>
 <pre><code>## # A tibble: 5 x 2
 ##    mean    sd
 ## * &lt;dbl&gt; &lt;dbl&gt;
@@ -179,15 +161,6 @@ rownames(mean_lobster_size) &lt;- c(&quot;Arroyo Quemado&quot;, &quot;Carpenteri
 ## 3  71.4    14
 ## 4  72       9
 ## 5  76.2    11</code></pre>
-<pre class="r"><code># create a table comparing mean lobster sizes at the 5 locations
-
-mean_lobster_tbl &lt;- mean_lobster_size %&gt;% 
-  kable(col.names = c(&quot;Mean Lobster Carapace Length (mm)&quot;, &quot;Standard Deviation (mm)&quot;),
-        caption = &quot;**Table 1. Mean Lobster Sizes at 5 Locations in 2017.** Researchers collected Panulirus interruptus lobster abundance in 2017 at the sites of Arroyo Quemado (AQUE), Naples Reef (NAPL), Mohawk Reef (MOHK), Isla Vista (IVEE), and Carpinteria (CARP). Listed are the average carapace length (mm) of lobsters collected at each location and the standard deviation of the samples taken at each location. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project.&quot;) %&gt;% 
-  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;), full_width = FALSE) %&gt;% 
-  row_spec(row = 5, bold = TRUE)
-  
-mean_lobster_tbl</code></pre>
 <table class="table table-striped table-hover" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
 <strong>Table 1. Mean Lobster Sizes at 5 Locations in 2017.</strong> Researchers collected Panulirus interruptus lobster abundance in 2017 at the sites of Arroyo Quemado (AQUE), Naples Reef (NAPL), Mohawk Reef (MOHK), Isla Vista (IVEE), and Carpinteria (CARP). Listed are the average carapace length (mm) of lobsters collected at each location and the standard deviation of the samples taken at each location. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project.
@@ -262,32 +235,11 @@ Naples Reef
 </tr>
 </tbody>
 </table>
-<pre class="r"><code># Run an ANOVA test
-
-# Single factor: SITE (location)
-# Number of levels: 5 (IVEE, AQUE, CARP, MOHK, NAPL)
-# Random variable: SIZE (mm)
-
-# Is there a significant difference in mean lobster size (mm) for sites IVEE, AQUE, CARP, MOHK, NAPL? 
-
-# HO: mean lobster sizes across all sites are equal
-# HA: At least two means differ significantly 
-
-lobster_aov &lt;- lobster_abundance_tidy %&gt;% 
-  filter(YEAR == &quot;2017&quot;) %&gt;%
-  aov(SIZE ~ SITE, data = .)
-
-summary(lobster_aov)</code></pre>
 <pre><code>##               Df Sum Sq Mean Sq F value Pr(&gt;F)   
 ## SITE           4   2355   588.6   3.424 0.0085 **
 ## Residuals   1663 285871   171.9                  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
-<pre class="r"><code># post-hoc testing using Tukey's HSD
-
-lobster_ph &lt;- TukeyHSD(lobster_aov)
-
-lobster_ph</code></pre>
 <pre><code>##   Tukey multiple comparisons of means
 ##     95% family-wise confidence level
 ## 
@@ -503,15 +455,6 @@ napl_eff_size &lt;- lobster_abundance_tidy %&gt;%
 <div id="section-2" class="section level3">
 <h3>4</h3>
 <p>The legal minimum carapace size for lobster is 82.6 mm. What proportion of observed lobsters at each site are above the legal minimum? Does that proportion differ significantly across the 5 sites? (chi-sq) 2017</p>
-<pre class="r"><code># 4
-
-# create a df of lobster sizes above and below 83 mm at each site; size = &quot;legal&quot; or &quot;not leagal&quot;
-
-lobster_legal &lt;- lobster_abundance_tidy %&gt;% 
-  mutate(size=ifelse(SIZE &lt;= 82.6, &quot;Not Legal&quot;, &quot;Legal&quot;)) %&gt;% 
-  filter(YEAR == &quot;2017&quot;)
-
-lobster_legal</code></pre>
 <pre><code>##      YEAR MONTH      DATE SITE SBC_LTER_TRANSECT LOBSTER_TRANSECT SIZE
 ## 1    2017     8 21-Aug-17 AQUE                 1                B   45
 ## 2    2017     8 21-Aug-17 AQUE                 1                B   75
@@ -3850,16 +3793,7 @@ lobster_legal</code></pre>
 ## 1666     Legal
 ## 1667 Not Legal
 ## 1668 Not Legal</code></pre>
-<pre class="r"><code># create a table for legal and illegal lobster sizes 
-
-lobster_legal_tbl &lt;- lobster_legal %&gt;%
-  count(SITE, size) %&gt;% 
-  spread(size, n) %&gt;% 
-  select(-SITE)
-
-rownames(lobster_legal_tbl) &lt;- c(&quot;Arroyo Quemado&quot;, &quot;Carpenteria&quot;, &quot;Isla Vista&quot;, &quot;Mohawk Reef&quot;, &quot;Naples Reef&quot;)</code></pre>
 <pre><code>## Warning: Setting row names on a tibble is deprecated.</code></pre>
-<pre class="r"><code>lobster_legal_tbl</code></pre>
 <pre><code>## # A tibble: 5 x 2
 ##   Legal `Not Legal`
 ## * &lt;int&gt;       &lt;int&gt;
@@ -3868,32 +3802,17 @@ rownames(lobster_legal_tbl) &lt;- c(&quot;Arroyo Quemado&quot;, &quot;Carpenteri
 ## 3   130         476
 ## 4    24         154
 ## 5    37          75</code></pre>
-<pre class="r"><code># convert counts to proportions from lobster_legal_tbl
-
-lobster_prop &lt;- prop.table(as.matrix(lobster_legal_tbl), 1)
-
-lobster_prop</code></pre>
 <pre><code>##                    Legal Not Legal
 ## Arroyo Quemado 0.2388060 0.7611940
 ## Carpenteria    0.2539007 0.7460993
 ## Isla Vista     0.2145215 0.7854785
 ## Mohawk Reef    0.1348315 0.8651685
 ## Naples Reef    0.3303571 0.6696429</code></pre>
-<pre class="r"><code># run a chi-sq test
-
-# We ask: &quot;Is there a significant association between site and legal lobster carapace length (mm)?&quot;
-
-lobster_x2 &lt;- chisq.test(lobster_prop,
-                         simulate.p.value = TRUE)
-
-lobster_x2</code></pre>
 <pre><code>## 
-##  Pearson's Chi-squared test with simulated p-value (based on 2000
-##  replicates)
+##  Pearson's Chi-squared test
 ## 
-## data:  lobster_prop
-## X-squared = 0.11095, df = NA, p-value = 1</code></pre>
-<p>“Lobster carapace length (mm) differed insignificantly between AQUE (n = ), Carpinteria (n = ), Isla Vista (n = ), MOHK (n = ), and Naples (n = ) (<span class="math inline">\(\chi^2\)</span>(NA) = ….., p = 1).</p>
+## data:  lobster_legal_tbl
+## X-squared = 18.497, df = 4, p-value = 0.0009864</code></pre>
 </div>
 
 
