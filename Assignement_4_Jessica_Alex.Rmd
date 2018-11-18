@@ -172,7 +172,7 @@ mean_lobster_size
 
 mean_lobster_tbl <- mean_lobster_size %>% 
   kable(col.names = c("Site", "Mean Lobster Carapace Length (mm)", "Standard Deviation (mm)"),
-        caption = "Mean Lobster Sizes at 5 Locations in 2017. ") %>% 
+        caption = "Mean Lobster Sizes at 5 Locations in 2017. Researchers collected Panulirus interruptus lobster abundance in 2017 at the sites of Arroyo Quemado (AQUE), Naples Reef (NAPL), Mohawk Reef (MOHK), Isla Vista (IVEE), and Carpinteria (CARP). Listed are the average carapace length (mm) of lobsters collected at each location and the standard deviation of the samples taken at each location. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project.") %>% 
   kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>% 
   row_spec(row = 5, bold = TRUE)
   
@@ -480,7 +480,8 @@ lobster_prop
 
 # We ask: "Is there a significant association between site and legal lobster carapace length (mm)?"
 
-lobster_x2 <- chisq.test(lobster_prop)
+lobster_x2 <- chisq.test(lobster_prop,
+                         simulate.p.value = TRUE)
 
 lobster_x2
 ```
