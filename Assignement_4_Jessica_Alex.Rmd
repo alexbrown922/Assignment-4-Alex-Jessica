@@ -151,7 +151,7 @@ traps_col
 ```{r}
 # 2
 
-# Compare mean lobster sizes (carapace length (mm)) across the five sites for lobster observations collected in 2017. Create a bar graph with standard deviation
+# Compare mean lobster sizes (carapace length (mm)) across the five sites for lobster observations collected in 2017.
 
 # create a new df with mean lobster sizes at the 5 locations
 
@@ -208,10 +208,19 @@ Mean lobster sizes (carapace length (mm)) at Arroyo Quemado, Naples Reef, Mohawk
 
 Sig-diff: 
 
-
+NAPL-IVEE
+NAPL-CARP
 
 Not sig-diff:
 
+MOHK-CARP
+IVEE-CARP
+NAPL-AQUE
+MOHK-AQUE
+IVEE-AQUE
+CARP-AQUE
+NAPL-MOHK
+MOHK-IVEE
 
 
 
@@ -444,7 +453,7 @@ The legal minimum carapace size for lobster is 82.6 mm. What proportion of obser
 # create a df of lobster sizes above and below 83 mm at each site; size = "legal" or "not leagal"
 
 lobster_legal <- lobster_abundance_tidy %>% 
-  mutate(size=ifelse(SIZE <= 83, "Not Legal", "Legal")) %>% 
+  mutate(size=ifelse(SIZE <= 82.6, "Not Legal", "Legal")) %>% 
   filter(YEAR == "2017")
 
 lobster_legal
@@ -463,7 +472,7 @@ lobster_legal_tbl
 
 # convert counts to proportions from lobster_legal_tbl
 
-lobster_prop <- prop.table(as.matrix(lobster_legal_tbl))
+lobster_prop <- prop.table(as.matrix(lobster_legal_tbl), 1)
 
 lobster_prop
 
