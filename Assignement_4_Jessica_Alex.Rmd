@@ -287,9 +287,7 @@ NAPL-MOHK
 MOHK-IVEE
 
 
-
-
-For number 3, conduct 5 two sample t-tests for each location between 2012 and 2017 and see the significant changes at each MPA and non-MPA location and compare in discussion.
+### 3
 
 ```{r, include = FALSE}
 
@@ -527,7 +525,7 @@ napl_eff_size
 # Difference in means = (`r diff(napl_ttest$estimate)`)
 
 ```
-### 3 
+
 
 California spiny lobster sizes were measured by divers at marine protected areas (Isla Vista and Naples Reef) and non-marine protected areas (Arroyo Quemado, Carpinteria, and Mohawk Reef) in 2012 and 2017. Of the five locations, only lobsters at Mohawk Reef exhibited a significant change in mean size between 2012 (`r round(mohk_table_2012$mean,2)` ± `r round(mohk_table_2012$sd,2)` mm) and 2017 (`r round(mohk_table_2017$mean,2)` ± `r round(mohk_table_2017$sd,2)` mm), based on results from a two-sample Student's t-test [t(`r round(mohk_ttest$parameter,2)`) = `r round(mohk_ttest$statistic,2)`, *p* < 0.05, $\alpha$ = 0.05]. In addition, the effect size is moderate (Cohen's d = `r round(mohk_eff_size$estimate,2)`).
 
