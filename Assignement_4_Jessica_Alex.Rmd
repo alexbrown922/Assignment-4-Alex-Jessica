@@ -2,7 +2,10 @@
 title: "Assignment_4_Jessica_Alex"
 author: "Alex Brown Jessica Jagdeo"
 date: "11/14/2018"
-output: html_document
+output:
+  html_document:
+    df_print: paged
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -498,7 +501,7 @@ mean_lobster_size
 
 mean_lobster_tbl <- mean_lobster_size %>% 
   kable(col.names = c("Mean Lobster Carapace Length (mm)", "Standard Deviation (mm)"),
-        caption = "**Table 1. Mean Lobster Sizes at 5 Locations in 2017.** Researchers collected Panulirus interruptus lobster abundance in 2017 at the sites of Arroyo Quemado (AQUE), Naples Reef (NAPL), Mohawk Reef (MOHK), Isla Vista (IVEE), and Carpinteria (CARP). Listed are the average carapace length (mm) of lobsters collected at each location and the standard deviation of the length (mm) of samples taken at each location. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project.") %>% 
+        caption = "Table 1. Mean Lobster Sizes at 5 Locations in 2017. Researchers collected Panulirus interruptus lobster abundance in 2017 at the sites of Arroyo Quemado (AQUE), Naples Reef (NAPL), Mohawk Reef (MOHK), Isla Vista (IVEE), and Carpinteria (CARP). Listed are the average carapace length (mm) of lobsters collected at each location and the standard deviation of the length (mm) of samples taken at each location. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project.") %>% 
   kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>% 
   row_spec(row = 5, bold = TRUE)
   
