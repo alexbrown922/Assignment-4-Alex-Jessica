@@ -223,80 +223,6 @@ traps_col
 From 2012 to 2017, the number of lobster trap buoys were counted at Arroyo Quemado, Carpinteria, and Mohawk Reef to gauge fishing pressure at each site (Fig. 3). Isla Vista and Naples Reef did not have any commercial lobster trap floats within their regions because they are marine protected areas. Overall, each site saw a decrease in the amount of lobster trap floats present during this time period. At Arroyo Quemado, lobster traps increased from 2012 to 2013, leveled off from 2013 to 2016, and decreased by `r abs(diff(aque_diff$total_traps))` traps from 2016 to 2017. Carpinteria witnessed a peak in lobster traps in 2016, followed by a sharp drop in lobster trap numbers in 2017 resulting in a difference of `r abs(diff(carp_diff$total_traps))` traps. In contrast to these general patterns at Arroyo Quemado and Carpinteria, Mohawk Reef displayed a steadily declining number of lobster trap floats from 2012 to 2017. 
 
 
-
-###Average Lobster Size between Each Location in 2017 (2) 
-
-
-```{r, include = FALSE}
-# 2
-
-# Compare mean lobster sizes (carapace length (mm)) across the five sites for lobster observations collected in 2017.
-
-# create a new df with mean lobster sizes at the 5 locations
-
-# rename sites within column
-
-mean_lobster_size <- lobster_abundance_tidy %>% 
-  select(YEAR, SITE, SIZE) %>% 
-  filter(YEAR == "2017") %>% 
-  group_by(SITE) %>% 
-  summarize(mean = round(mean(SIZE), 2),
-            sd = round(sd(SIZE)))  %>% 
-  select(mean, sd)
-
-rownames(mean_lobster_size) <- c("Arroyo Quemado", "Carpenteria", "Isla Vista", "Mohawk Reef", "Naples Reef")
-
-mean_lobster_size
-
-```
-
-```{r, echo=FALSE}
-# create a table comparing mean lobster sizes at the 5 locations
-
-mean_lobster_tbl <- mean_lobster_size %>% 
-  kable(col.names = c("Mean Lobster Carapace Length (mm)", "Standard Deviation (mm)"),
-        caption = "**Table 1. Mean Lobster Sizes at 5 Locations in 2017.** Researchers collected Panulirus interruptus lobster abundance in 2017 at the sites of Arroyo Quemado (AQUE), Naples Reef (NAPL), Mohawk Reef (MOHK), Isla Vista (IVEE), and Carpinteria (CARP). Listed are the average carapace length (mm) of lobsters collected at each location and the standard deviation of the length (mm) of samples taken at each location. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project.") %>% 
-  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>% 
-  row_spec(row = 5, bold = TRUE)
-  
-mean_lobster_tbl
-
-```
-
-```{r, include=FALSE}
-# Run an ANOVA test
-
-# Single factor: SITE (location)
-# Number of levels: 5 (IVEE, AQUE, CARP, MOHK, NAPL)
-# Random variable: SIZE (mm)
-
-# Is there a significant difference in mean lobster size (mm) for sites IVEE, AQUE, CARP, MOHK, NAPL? 
-
-# HO: mean lobster sizes across all sites are equal
-# HA: At least two means differ significantly 
-
-lobster_aov <- lobster_abundance_tidy %>% 
-  filter(YEAR == "2017") %>%
-  aov(SIZE ~ SITE, data = .)
-
-summary(lobster_aov)
-
-# post-hoc testing using Tukey's HSD
-
-lobster_ph <- TukeyHSD(lobster_aov)
-
-lobster_ph
-```
-
-To assess the differences in lobster sizes at each of the five locations in the Santa Barbara County area, an average of the measured carapace length (in mm), which is defined as the rear of the eye socket to the rear of the carapace on a line parallel to the center line of the body shell (7), was taken for each lobster sample in 2017. A significant difference was found in mean carapace length of lobster samples taken at Naples Reef and Isla Vista as well as Naples Reef and Carpinteria in 2017, according to a one way ANOVA test (F(4, 1663) = 3.4, p < 0.01, $\alpha$ = .05, with post-hoc analysis by Tukey's HSD, *p* < 0.01, $\alpha = 0.05$. n = 67 (AQUE), n = 705 (CARP), n = 606 (IVEE), n = 178 (MOHK), n = 112 (NAPL). However, the rest of the locations saw no significant difference in mean carapace length of observed samples.
-
-It is notable that a significant difference was found in average lobster sizes between two of the marine protected areas (Naples Reef and Isla Vista). The reason for this difference could be caused by a multitude of external environmental factors, such as urban development in Isla Vista, and is not necessarily an indictment of the effectiveness of marine protection in Isla Vista in comparison to Naples Reef. Further research on why Isla Vista’s average lobster size is smaller in comparison to Naples Reef and the other locations is needed. 
-
-
-
-
-
-
 ###Average Lobster Size between 2012 and 2017 at MPA and non-MPA Sites (3)
 
 ```{r, include = FALSE}
@@ -538,6 +464,78 @@ napl_eff_size
 
 
 California spiny lobster sizes were measured by divers at marine protected areas (Isla Vista and Naples Reef) and non-marine protected areas (Arroyo Quemado, Carpinteria, and Mohawk Reef) in 2012 and 2017. Of the five locations, only lobsters at Mohawk Reef exhibited a significant change in mean size between 2012 (`r round(mohk_table_2012$mean,2)` ± `r round(mohk_table_2012$sd,2)` mm) and 2017 (`r round(mohk_table_2017$mean,2)` ± `r round(mohk_table_2017$sd,2)` mm), based on results from a two-sample Student's t-test [t(`r round(mohk_ttest$parameter,2)`) = `r round(mohk_ttest$statistic,2)`, *p* < 0.05, $\alpha$ = 0.05]. In addition, the effect size is moderate (Cohen's d = `r round(mohk_eff_size$estimate,2)`).
+
+
+
+###Average Lobster Size between Each Location in 2017 (2) 
+
+
+```{r, include = FALSE}
+# 2
+
+# Compare mean lobster sizes (carapace length (mm)) across the five sites for lobster observations collected in 2017.
+
+# create a new df with mean lobster sizes at the 5 locations
+
+# rename sites within column
+
+mean_lobster_size <- lobster_abundance_tidy %>% 
+  select(YEAR, SITE, SIZE) %>% 
+  filter(YEAR == "2017") %>% 
+  group_by(SITE) %>% 
+  summarize(mean = round(mean(SIZE), 2),
+            sd = round(sd(SIZE)))  %>% 
+  select(mean, sd)
+
+rownames(mean_lobster_size) <- c("Arroyo Quemado", "Carpenteria", "Isla Vista", "Mohawk Reef", "Naples Reef")
+
+mean_lobster_size
+
+```
+
+```{r, echo=FALSE}
+# create a table comparing mean lobster sizes at the 5 locations
+
+mean_lobster_tbl <- mean_lobster_size %>% 
+  kable(col.names = c("Mean Lobster Carapace Length (mm)", "Standard Deviation (mm)"),
+        caption = "**Table 1. Mean Lobster Sizes at 5 Locations in 2017.** Researchers collected Panulirus interruptus lobster abundance in 2017 at the sites of Arroyo Quemado (AQUE), Naples Reef (NAPL), Mohawk Reef (MOHK), Isla Vista (IVEE), and Carpinteria (CARP). Listed are the average carapace length (mm) of lobsters collected at each location and the standard deviation of the length (mm) of samples taken at each location. Data source: Reed, D., Santa Barbara Coastal Long Term Ecological Research Project.") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>% 
+  row_spec(row = 5, bold = TRUE)
+  
+mean_lobster_tbl
+
+```
+
+```{r, include=FALSE}
+# Run an ANOVA test
+
+# Single factor: SITE (location)
+# Number of levels: 5 (IVEE, AQUE, CARP, MOHK, NAPL)
+# Random variable: SIZE (mm)
+
+# Is there a significant difference in mean lobster size (mm) for sites IVEE, AQUE, CARP, MOHK, NAPL? 
+
+# HO: mean lobster sizes across all sites are equal
+# HA: At least two means differ significantly 
+
+lobster_aov <- lobster_abundance_tidy %>% 
+  filter(YEAR == "2017") %>%
+  aov(SIZE ~ SITE, data = .)
+
+summary(lobster_aov)
+
+# post-hoc testing using Tukey's HSD
+
+lobster_ph <- TukeyHSD(lobster_aov)
+
+lobster_ph
+```
+
+To assess the differences in lobster sizes at each of the five locations in the Santa Barbara County area, an average of the measured carapace length (in mm), which is defined as the rear of the eye socket to the rear of the carapace on a line parallel to the center line of the body shell (7), was taken for each lobster sample in 2017. A significant difference was found in mean carapace length of lobster samples taken at Naples Reef and Isla Vista as well as Naples Reef and Carpinteria in 2017, according to a one way ANOVA test (F(4, 1663) = 3.4, p < 0.01, $\alpha$ = .05, with post-hoc analysis by Tukey's HSD, *p* < 0.01, $\alpha = 0.05$. n = 67 (AQUE), n = 705 (CARP), n = 606 (IVEE), n = 178 (MOHK), n = 112 (NAPL). However, the rest of the locations saw no significant difference in mean carapace length of observed samples.
+
+It is notable that a significant difference was found in average lobster sizes between two of the marine protected areas (Naples Reef and Isla Vista). The reason for this difference could be caused by a multitude of external environmental factors, such as urban development in Isla Vista, and is not necessarily an indictment of the effectiveness of marine protection in Isla Vista in comparison to Naples Reef. Further research on why Isla Vista’s average lobster size is smaller in comparison to Naples Reef and the other locations is needed. 
+
+
 
 
 
